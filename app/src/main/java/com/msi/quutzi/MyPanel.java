@@ -13,19 +13,9 @@ import android.graphics.SweepGradient;
 import android.media.MediaPlayer;
 import android.view.MotionEvent;
 import android.view.View;
-/**
- * Created by sj on 8/7/16.
- */
+
+
 public class MyPanel extends View{
-//    public MyPanel(Context context) {
-//        super(context);
-//        System.out.print("Fuck you");
-//    }
-//
-//    @Override
-//    public void onDraw(Canvas canvas) {
-//        System.out.print("Fuck you too");
-//    }
     int color;
     float w, h, ballRadius;
     float lineLength, lineHeighth, lineX;
@@ -114,15 +104,15 @@ public class MyPanel extends View{
 
         @Override
         public void onDraw(Canvas canvas) {
-            if (yesno == false) {
-                if (boomed == false) {
+            if (!yesno) {
+                if (!boomed) {
                     updateGame(canvas);
                     invalidate();
                 } else {
                     playAgain(canvas);
                 }
             }
-            if (play_again == false) {
+            if (!play_again) {
                 showScore(canvas);
             }
         }
@@ -169,11 +159,11 @@ public class MyPanel extends View{
             } else {
                 bullsEyeAngle = 0;
             }
-            drawEyeA(canvas);
-            drawEyeB(canvas);
+            drawEyeX(canvas);
+            drawEyeY(canvas);
         }
 
-        private void drawEyeA(Canvas canvas) {
+    private void drawEyeX(Canvas canvas) {
             float xF = (float) Math.sin(Math.toRadians(bullsEyeAngle));
             float yF = (float) Math.cos(Math.toRadians(bullsEyeAngle));
             float xStart = ballX - (ballRadius * xF);
@@ -183,7 +173,7 @@ public class MyPanel extends View{
             canvas.drawLine(xStart, yStart, xEnd, yEnd, bullsEyePaint);
         }
 
-        private void drawEyeB(Canvas canvas) {
+    private void drawEyeY(Canvas canvas) {
             float bAngle = bullsEyeAngle + 90;
             if (bAngle > 360) {
                 bAngle -= 360;
