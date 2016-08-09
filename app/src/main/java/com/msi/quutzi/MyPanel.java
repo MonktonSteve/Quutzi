@@ -18,14 +18,12 @@ import android.view.View;
 public class MyPanel extends View {
     float w, h;
     float ballRadius;
-    float lineLength, lineHeighth, lineX;
     float xMax, yMax, xMin, yMin;
     float ballX, ballY;
     float ballSpeedX, ballSpeedY;
     float bullsEyeAngle;
     Paint bullsEyePaint = new Paint();
     Paint circlePaint = new Paint();
-    Paint linePaint = new Paint();
     Paint backPaint = new Paint();
     //MediaPlayer mp1, mp2;
     boolean boomed;
@@ -37,6 +35,7 @@ public class MyPanel extends View {
     int score = 0;
     int highScore = 0;
     BullsEye bullsEye = new BullsEye();
+    Paddle paddle = new Paddle();
 
     public MyPanel(Context context) {
         super(context);
@@ -45,7 +44,7 @@ public class MyPanel extends View {
         bullsEyePaint.setColor(Color.BLACK);
         bullsEyePaint.setStrokeWidth(3);
         circlePaint.setStyle(Paint.Style.FILL);
-        linePaint.setStyle(Paint.Style.FILL);
+
         bullsEye.setPaint(bullsEyePaint);
 
         //mp1 = MediaPlayer.create(context, R.raw.lock);
@@ -57,7 +56,8 @@ public class MyPanel extends View {
     private void _init() {
         ballX = w / 2;
         ballY = h / 2;
-        lineX = (w / 2);
+        paddle.setX(w / 2);
+
         bullsEyeAngle = 0;
         boomed = false;
         if (level == 0) {
@@ -81,13 +81,15 @@ public class MyPanel extends View {
         h = _h;
         xMax = _w - 1;
         yMax = _h - 1;
-        lineLength = w / 4;
-        lineHeighth = 12;
+        paddle.setY(yMax - 20);
+        paddle.setX(w / 2);
+        paddle.setLength(w / 4);
+        paddle.setHeighth(12);
         xMin = 0;
         yMin = 0;
         ballX = w / 2;
         ballY = h / 2;
-        lineX = (w / 2);
+
         ballSpeedX = -2;
         ballSpeedY = -3;
         bullsEyeAngle = 0;
@@ -98,7 +100,6 @@ public class MyPanel extends View {
             ballRadius = w / 5;
         }
         circlePaint.setAntiAlias(true);
-        linePaint.setAntiAlias(true);
         boomed = false;
     }
 
@@ -120,7 +121,7 @@ public class MyPanel extends View {
     private void updateGame(Canvas canvas) {
         canvas.drawRect(0, 0, w, h, backPaint);
         drawCircle(canvas);
-        drawLine(canvas);
+        paddle.draw(canvas);
         updateCircle(canvas);
     }
 
@@ -164,11 +165,6 @@ public class MyPanel extends View {
         bullsEye.draw(canvas, bullsEyeAngle);
     }
 
-    private void drawLine(Canvas canvas) {
-        linePaint.setColor(Color.WHITE);
-        linePaint.setStrokeWidth(lineHeighth);
-        canvas.drawLine(lineX - (lineLength / 2), yMax - 20, lineX + (lineLength / 2), yMax - 20, linePaint);
-    }
 
     // Detect collision and update the position of the ball.
     private void updateCircle(Canvas canvas) {
@@ -183,6 +179,10 @@ public class MyPanel extends View {
             ballSpeedX = -ballSpeedX;
             ballX = xMin + ballRadius;
         }
+        float lineHeighth = paddle.getHeighth();
+        float lineX = paddle.getX();
+        float lineLength = paddle.getLength();
+
         if (((ballY + ballRadius) >= (yMax - (20 + lineHeighth)))
                 && ((ballX > (lineX - (lineLength / 2)))
                 && (ballX < (lineX + (lineLength / 2))))) {
@@ -218,7 +218,7 @@ public class MyPanel extends View {
                 //ballSpeedY += deltaY * scalingFactor;
             case MotionEvent.ACTION_DOWN:
                 // Modify rotational angles according to movement
-                lineX = currentX;
+                paddle.setX(currentX);
         }
         // Save current x, y
         //previousX = currentX;
