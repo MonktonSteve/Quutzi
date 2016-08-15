@@ -22,6 +22,8 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            android:icon="@drawable/ic_bar" >
+            android:icon="@drawable/ic_ball" >
         </activity>
     </application>
 

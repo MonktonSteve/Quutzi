@@ -1,54 +1,53 @@
 package com.msi.quutzi;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 
 public class Paddle {
-    private Paint paint = new Paint();
-    private float x, y;
-    private float lineLength;
-    private float lineHeighth;
+    private float leftX, topY;
+    private float barLength;
+    private float barHeight;
+    Bitmap bitmap;
 
-    public Paddle() {
-
-        paint.setStyle(Paint.Style.FILL);
-        paint.setAntiAlias(true);
-        paint.setColor(Color.WHITE);
+    public Paddle(Context context) {
+        Bitmap imBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_bar);
+        bitmap = imBitmap.copy(Bitmap.Config.ARGB_8888, true);
+        barLength = bitmap.getWidth();
+        barHeight = bitmap.getHeight();
 
     }
 
-    public void setX(float lineX) {
-        x = lineX;
+    public void setX(float barX) {
+        leftX = barX - (barLength / 2);
     }
 
-    public void setY(float lineY) {
-        y = lineY;
+    public void setY(float bottomY) {
+        topY = bottomY - barHeight;
     }
 
-    public void setLength(float length) {
-        lineLength = length;
+    public float getLeft() {
+        return leftX;
     }
 
-    public void setHeighth(float heighth) {
-        lineHeighth = heighth;
-        paint.setStrokeWidth(heighth);
+    public float getTop() {
+        return topY;
     }
 
-    public float getLength() {
-        return lineLength;
+    public float getRight() {
+        return leftX + barLength;
     }
 
-    public float getHeighth() {
-        return lineHeighth;
-    }
-
-    public float getX() {
-        return x;
+    public float getCenter() {
+        return (barLength / 2);
     }
 
     public void draw(Canvas canvas) {
-
-        canvas.drawLine(x - (lineLength / 2), y, x + (lineLength / 2), y, paint);
+        canvas.drawBitmap(bitmap, leftX, topY, null);
     }
 }
