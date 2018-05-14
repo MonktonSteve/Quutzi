@@ -9,13 +9,13 @@ import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
-public class Paddle {
+class Paddle {
     private float leftX, topY;
     private float barLength;
     private float barHeight;
-    Bitmap bitmap;
+    private Bitmap bitmap;
 
-    public Paddle(Context context) {
+    Paddle(Context context) {
         Bitmap imBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_bar);
         bitmap = imBitmap.copy(Bitmap.Config.ARGB_8888, true);
         barLength = bitmap.getWidth();
@@ -23,31 +23,31 @@ public class Paddle {
 
     }
 
-    public void setX(float barX) {
+    void setX(float barX) {
         leftX = barX - (barLength / 2);
     }
 
-    public void setY(float bottomY) {
+    void setY(float bottomY) {
         topY = bottomY - barHeight;
     }
 
-    public float getLeft() {
+    float getLeft() {
         return leftX;
     }
 
-    public float getTop() {
+    float getTop() {
         return topY;
     }
 
-    public float getRight() {
+    float getRight() {
         return leftX + barLength;
     }
 
-    public float getCenter() {
+    float getCenter() {
         return (barLength / 2);
     }
 
-    public void draw(Canvas canvas) {
+    void draw(Canvas canvas) {
         canvas.drawBitmap(bitmap, leftX, topY, null);
     }
 }

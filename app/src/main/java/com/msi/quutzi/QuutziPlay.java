@@ -7,101 +7,74 @@ import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.SweepGradient;
-import android.view.MotionEvent;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 
+import java.util.Random;
 
-public class MyPanel extends View {
+
+class QuutziPlay {
     private float screenW, screenH;
-    private float ballRadius;
     private float xMax, yMax, xMin, yMin;
     private float ballX, ballY;
     private float ballSpeedX, ballSpeedY;
-    private float bullsEyeAngle;
-    private Paint bullsEyePaint = new Paint();
+    private float deltaSpeed;
     private Paint backPaint = new Paint();
     private boolean boomed;
     private boolean playAgain;
     private Context _context;
+    private View _parent;
     private int level = 0;
     private int highLevel = 0;
     private int score = 0;
     private int highScore = 0;
-    private BullsEye bullsEye = new BullsEye();
     private Paddle paddle;
     private Ball ball;
-    private final float lineGap = 20;
+    private Random rand = new Random();
 
-    public MyPanel(Context context) {
-        super(context);
+    QuutziPlay(View parent, Context context) {
+        _parent = parent;
         _context = context;
         backPaint.setColor(Color.BLUE);
-        bullsEyePaint.setColor(Color.BLACK);
-        bullsEyePaint.setStrokeWidth(3);
         paddle = new Paddle(context);
         ball = new Ball(context);
-        bullsEye.setPaint(bullsEyePaint);
 
     }
 
+    void setSizes(int _w, int _h, int _oldw, int _oldh) {
 
-    @Override
-    public void onSizeChanged(int _w, int _h, int _oldw, int _oldh) {
+        xMin = 0;
+        yMin = 0;
         screenW = _w;
         screenH = _h;
         xMax = screenW - 1;
         yMax = screenH - 1;
-        paddle.setY(yMax - lineGap);
-        paddle.setX(screenW / 2);
         setupGame();
-        xMin = 0;
-        yMin = 0;
-        ballRadius = ball.getRadius();
-        ball.setY(ballY);
-        ball.setX(ballX);
     }
 
-    @Override
-    public void onDraw(Canvas canvas) {
+    void draw(Canvas canvas) {
         if (playAgain) {
             if (!boomed) {
                 updateGame(canvas);
-                invalidate();
+
             } else {
                 wannaPlayAgain();
             }
         } else {
             showScore(canvas);
         }
-
     }
 
     private void updateGame(Canvas canvas) {
         canvas.drawRect(0, 0, screenW, screenH, backPaint);
         paddle.draw(canvas);
         ball.draw(canvas);
-        drawBullsEye(canvas);
-        updateCircle(canvas);
+        updateBallPosition(canvas);
+        _parent.invalidate();
     }
-
-    private void drawBullsEye(Canvas canvas) {
-        if (bullsEyeAngle < 360) {
-            bullsEyeAngle += 1;
-        } else {
-            bullsEyeAngle = 0;
-        }
-        bullsEye.setRadius(ballRadius);
-        bullsEye.setCoordinates(ballX, ballY);
-        bullsEye.setPaint(bullsEyePaint);
-        bullsEye.draw(canvas, bullsEyeAngle);
-    }
-
 
     // Detect collision and update the position of the ball.
-    private void updateCircle(Canvas canvas) {
+    private void updateBallPosition(Canvas canvas) {
+        float ballRadius = ball.getRadius();
         // Get new (x,y) position
         ballX += ballSpeedX;
         ballY += ballSpeedY;
@@ -133,43 +106,38 @@ public class MyPanel extends View {
             ballSpeedY = -ballSpeedY;
             ballY = yMin + ballRadius;
         }
-        ball.setY(ballY);
-        ball.setX(ballX);
+        ball.setCoordinates(ballY, ballX);
     }
 
-    // Touch-input handler
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        float currentX = event.getX();
-        switch (event.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                if (currentX < paddle.getCenter()) {
-                    paddle.setX(paddle.getCenter());
-                } else if (currentX > (screenW - paddle.getCenter())) {
-                    paddle.setX(screenW - paddle.getCenter());
-                } else {
-                    paddle.setX(currentX);
-                }
+    void touchEvent(float currentX) {
+        if (currentX < paddle.getCenter()) {
+            paddle.setX(paddle.getCenter());
+        } else if (currentX > (screenW - paddle.getCenter())) {
+            paddle.setX(screenW - paddle.getCenter());
+        } else {
+            paddle.setX(currentX);
         }
-        return true;  // Event handled
     }
 
     private void setupGame() {
-        ballX = screenW / 2;
-        ballY = screenH / 4;
-        bullsEyeAngle = 0;
+        final float lineGap = 20;
+
         boomed = false;
-        ballSpeedX = -1.8f;
-        ballSpeedY = -2.6f;
-        bullsEyeAngle = 0;
+        deltaSpeed = 0.5f;
+        ballSpeedX = -(1.8f + rand.nextFloat());
+        ballSpeedY = -1.5f;
         score = 0;
         playAgain = true;
         level = 0;
+        paddle.setY(yMax - lineGap);
+        paddle.setX(screenW / 2);
+        ballX = screenW / 2;
+        ballY = screenH / 4;
+        ball.setCoordinates(ballY, ballX);
     }
 
     private void nextLevel() {
         level += 1;
-        float deltaSpeed = 1;
         if (ballSpeedX > 0) {
             ballSpeedX += deltaSpeed;
         } else {
@@ -186,7 +154,7 @@ public class MyPanel extends View {
 
     private void wannaPlayAgain() {
         AlertDialog.Builder builder = new AlertDialog.Builder(_context);
-        builder.setMessage("Do you want to play (0.3) again?").setPositiveButton("Yes", dialogClickListener)
+        builder.setMessage("Do you want to play (0.6) again?").setPositiveButton("Yes", dialogClickListener)
                 .setNegativeButton("No", dialogClickListener).show();
     }
 
@@ -204,19 +172,19 @@ public class MyPanel extends View {
                     }
                     setupGame();
                     nextLevel();
-                    invalidate();
+                    _parent.invalidate();
                     break;
 
                 case DialogInterface.BUTTON_NEGATIVE:
                     //No button clicked
                     playAgain = false;
-                    invalidate();
                     if (score > highScore) {
                         highScore = score;
                     }
                     if (level > highLevel) {
                         highLevel = level;
                     }
+                    _parent.invalidate();
                     break;
             }
         }
@@ -243,7 +211,7 @@ public class MyPanel extends View {
         if (topScore < highScore) {
             topScore = highScore;
             editor.putInt("topScore", highScore);
-            editor.commit();
+            editor.apply();
         }
         if (topLevel < highLevel) {
             topLevel = highLevel;

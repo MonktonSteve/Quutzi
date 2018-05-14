@@ -6,13 +6,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
-import static android.R.attr.x;
-//import static android.view.View.X;
-//import static android.view.View.Y;
-
 class BullsEye {
     private float ballRadius;
     private float centerX, centerY;
+    private float bullsEyeAngle = 0;
     private Paint bullsEyePaint = new Paint();
 
     BullsEye() {
@@ -30,7 +27,15 @@ class BullsEye {
         centerY = y;
     }
 
-    void draw(Canvas canvas, float bullsEyeAngle) {
+    void rotate() {
+        if (bullsEyeAngle < 360) {
+            bullsEyeAngle += 1;
+        } else {
+            bullsEyeAngle = 0;
+        }
+    }
+
+    void draw(Canvas canvas) {
         drawOneLine(canvas, bullsEyeAngle);
         bullsEyeAngle = bullsEyeAngle + 90;
         if (bullsEyeAngle > 360) {

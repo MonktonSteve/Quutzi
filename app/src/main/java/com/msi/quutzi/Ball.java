@@ -8,17 +8,18 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.SweepGradient;
 
-public class Ball {
+class Ball {
     private float leftX, topY;
     private float centerX;
     private float centerY;
     private float ballWidth;
     private float ballHeight;
     private float ballRadius;
-    Bitmap bitmap;
+    private Bitmap bitmap;
     private Paint circlePaint;
+    private BullsEye bullsEye = new BullsEye();
 
-    public Ball(Context context) {
+    Ball(Context context) {
         Bitmap imBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_ball);
         bitmap = imBitmap.copy(Bitmap.Config.ARGB_8888, true);
         ballWidth = bitmap.getWidth();
@@ -27,42 +28,45 @@ public class Ball {
         if (ballWidth != ballHeight) {
             System.out.print("oops");
         }
+        bullsEye.setRadius(ballRadius);
         circlePaint = new Paint();
         circlePaint.setStyle(Paint.Style.FILL);
         circlePaint.setAntiAlias(true);
+
     }
 
-    public void setX(float _centerX) {
+    void setCoordinates(float _centerY, float _centerX) {
         centerX = _centerX;
-        leftX = centerX - (ballWidth / 2);
-    }
-
-    public void setY(float _centerY) {
+        leftX = centerX - ballRadius;
         centerY = _centerY;
-        topY = centerY - (ballHeight / 2);
+        topY = centerY - ballRadius;
+        bullsEye.setCoordinates(_centerX, _centerY);
     }
 
-    public float getLeft() {
-        return leftX;
-    }
-
-    public float getTop() {
+    float getTop() {
         return topY;
     }
 
-    public float getRight() {
+    float getRight() {
         return leftX + ballWidth;
     }
 
-    public float getRadius() {
+    float getRadius() {
         return ballRadius;
     }
 
-    public void draw(Canvas canvas) {
+    void draw(Canvas canvas) {
         canvas.drawBitmap(bitmap, leftX, topY, null);
+        drawBullsEye(canvas);
+
     }
 
-    public void boom(Canvas canvas) {
+    private void drawBullsEye(Canvas canvas) {
+        bullsEye.rotate();
+        bullsEye.draw(canvas);
+    }
+
+    void boom(Canvas canvas) {
         int[] circleColors = {Color.RED, Color.RED};
         float[] circlePositions = {0f, 1f};
 
@@ -71,6 +75,7 @@ public class Ball {
                 centerY,
                 circleColors,
                 circlePositions));
-        canvas.drawCircle(centerX, centerY, ballRadius, circlePaint);
+
+        topY = centerY - (ballHeight / 2);
     }
 }
