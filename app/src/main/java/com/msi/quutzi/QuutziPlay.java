@@ -154,7 +154,7 @@ class QuutziPlay {
 
     private void wannaPlayAgain() {
         AlertDialog.Builder builder = new AlertDialog.Builder(_context);
-        builder.setMessage("Do you want to play (0.6) again?").setPositiveButton("Yes", dialogClickListener)
+        builder.setMessage("Do you want to play (0.7) again?").setPositiveButton("Yes", dialogClickListener)
                 .setNegativeButton("No", dialogClickListener).show();
     }
 
